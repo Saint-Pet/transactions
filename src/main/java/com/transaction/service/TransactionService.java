@@ -33,7 +33,7 @@ public class TransactionService {
     private StatusRepository statusRepository;
 
     @Autowired
-    BalanceService balanceService;
+    private BalanceService balanceService;
 
 //    @Autowired
 //    private KafkaTemplate<String, String> kafkaTemplate;
