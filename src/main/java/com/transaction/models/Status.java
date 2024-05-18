@@ -7,13 +7,15 @@ import jakarta.persistence.*;
 public class Status {
 
     @Id
-    private Integer status_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer statusId;
+
     private String status_name;
     private String description;
 
     // Getters and Setters
-    public Integer getStatus_id() {
-        return status_id;
+    public Integer getStatusId() {
+        return statusId;
     }
     public String getStatus_name(){
         return status_name;
@@ -22,7 +24,10 @@ public class Status {
         return description;
     }
 
-    public void setStatus_id(Integer status_id) {
-        this.status_id = status_id;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    public void setStatus_name(String status_name) {
+        this.status_name = status_name;
     }
 }
