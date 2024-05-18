@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -34,6 +35,7 @@ public class TransactionService {
         transaction.setType_id(type_id);
         transaction.setCategory_id(category_id);
         transaction.setStatus_id(status_id);
+        transaction.setTransaction_time(LocalDateTime.now());
         transaction.setDescription(description);
         transaction.setCurrency_code(currency_code);
         transaction.setBank_id(bank_id);
