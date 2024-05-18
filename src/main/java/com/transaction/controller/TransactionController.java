@@ -22,9 +22,10 @@ public class TransactionController {
                                          @RequestParam Integer category_id,
                                          @RequestParam Integer status_id,
                                          @RequestParam String description,
-                                         @RequestParam String currency_code) {
+                                         @RequestParam String currency_code,
+                                         @RequestParam Integer bank_id) {
         return transactionService.createTransaction(user_id, amount, type_id, category_id,
-                status_id,description,currency_code);
+                status_id,description,currency_code, bank_id);
     }
 
     @GetMapping("/getall")

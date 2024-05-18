@@ -18,6 +18,7 @@ public class Transaction {
     private LocalDateTime transaction_time;
     private String description;
     private String currency_code;
+    private Integer bank_id;
 
     // Getters
     public Integer getTransaction_id(){
@@ -47,6 +48,9 @@ public class Transaction {
     public String getCurrency_code() {
         return currency_code;
     }
+    public Integer getBank_id(){
+        return bank_id;
+    }
 
     //Setters
     public void setUser_id(Integer userId) {
@@ -72,6 +76,9 @@ public class Transaction {
     }
     public void setCurrency_code(String currencyCode) {
         this.currency_code = currencyCode;
+    }
+    public void setBank_id(Integer bank_id){
+        this.bank_id=bank_id;
     }
 
     @Override

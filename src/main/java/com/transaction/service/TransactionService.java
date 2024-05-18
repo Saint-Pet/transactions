@@ -16,13 +16,13 @@ public class TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
 
-    @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
+//    @Autowired
+//    private KafkaTemplate<String, String> kafkaTemplate;
 
     @Transactional
     public Transaction createTransaction(Integer user_id, BigDecimal amount, Integer type_id,
                                          Integer category_id, Integer status_id,
-                                         String description, String currency_code) {
+                                         String description, String currency_code, Integer bank_id) {
         // Валидация транзакции
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Amount must be positive");
@@ -36,10 +36,11 @@ public class TransactionService {
         transaction.setStatus_id(status_id);
         transaction.setDescription(description);
         transaction.setCurrency_code(currency_code);
+        transaction.setBank_id(bank_id);
 
         Transaction savedTransaction = transactionRepository.save(transaction);
 
-        kafkaTemplate.send("transaction-topic", savedTransaction.toString());
+//        kafkaTemplate.send("transaction-topic", savedTransaction.toString());
 
         return savedTransaction;
     }
