@@ -32,6 +32,9 @@ public class TransactionService {
     @Autowired
     private StatusRepository statusRepository;
 
+    @Autowired
+    BalanceService balanceService;
+
 //    @Autowired
 //    private KafkaTemplate<String, String> kafkaTemplate;
 
@@ -84,6 +87,8 @@ public class TransactionService {
         transaction.setDescription(description);
 
         Transaction savedTransaction = transactionRepository.save(transaction);
+
+        balanceService.changeBalance(user_id, type_id, amount, bank_id, currency_code, transaction.getTransaction_time());
 
 //        kafkaTemplate.send("transaction-topic", savedTransaction.toString());
 
