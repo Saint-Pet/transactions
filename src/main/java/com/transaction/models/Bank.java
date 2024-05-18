@@ -7,8 +7,8 @@ import jakarta.persistence.*;
 public class Bank {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer bankId;
+    @Column(name = "bank_id")
+    private Integer id;
 
     private String bankName;
     private String bankCode;
@@ -18,12 +18,12 @@ public class Bank {
     private String name;
 
 
-    public Integer getBankId() {
-        return bankId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setBankId(Integer bankId) {
-        this.bankId = bankId;
+    public void setId(Integer bankId) {
+        this.id = bankId;
     }
 
     public String getBankName() {

@@ -30,7 +30,7 @@ public class StatusService {
         Optional<Status> status = statusRepository.findById(statusId);
         if (status.isPresent()){
             Status updatedStatus = status.get();
-            updatedStatus.setStatus_name(status_name);
+            updatedStatus.setStatusName(status_name);
             updatedStatus.setDescription(description);
             return updatedStatus;
         } else {

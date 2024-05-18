@@ -7,29 +7,32 @@ import jakarta.persistence.*;
 public class Type {
 
     @Id
-    private Integer type_id;
-    private String type_name;
+    @Column(name = "type_id")
+    private Integer id;
+
+    @Column(name = "type_name")
+    private String typeName;
+
     private String description;
 
-    // Getters and Setters
-    public Integer getType_id() {
-        return type_id;
+    public Integer getId() {
+        return id;
     }
 
-    public String getType_name() {
-        return type_name;
+    public String getTypeName() {
+        return typeName;
     }
 
     public String getDescription(){
         return description;
     }
 
-    public void setType_id(Integer id) {
-        this.type_id = id;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public void setType_name(String name) {
-        this.type_name = name;
+    public void setTypeName(String name) {
+        this.typeName = name;
     }
 
     public void setDescription(String description){

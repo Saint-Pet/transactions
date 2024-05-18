@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 public class Transaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer transaction_id;
+    @Column(name = "transaction_id")
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "bank_id")
@@ -32,86 +32,103 @@ public class Transaction {
     @JoinColumn(name = "type_id")
     private Type type;
 
-    private Integer user_id;
+    private Integer userId;
     private BigDecimal amount;
-    private LocalDateTime transaction_time;
+    private LocalDateTime transactionTime;
     private String description;
 
-    // Getters
-    public Integer getTransaction_id(){
-        return transaction_id;
-    }
-    public Integer getUser_id() {
-        return user_id;
-    }
-    public BigDecimal getAmount() {
-        return amount;
-    }
-    public LocalDateTime getTransaction_time() {
-        return transaction_time;
-    }
-    public String getDescription() {
-        return description;
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id=" + id +
+                ", user_id=" + userId +
+                ", bank=" + bank.getName() +
+                ", amount=" + amount +
+                ", category='" + category.getCategoryName() + '\'' +
+                ", status='" + status.getStatusName() + '\'' +
+                ", transaction_time=" + transactionTime + '\''+
+                ", description='" + description + '\'' +
+                ", currency_code='" + currency.getCurrencyName() + '\'' +
+                '}';
     }
 
-    public Type getType() {
-        return type;
+    public Integer getId() {
+        return id;
     }
+
+    public void setId(Integer transaction_id) {
+        this.id = transaction_id;
+    }
+
     public Bank getBank() {
         return bank;
-    }
-    public Currency getCurrency() {
-        return currency;
-    }
-    public Category getCategory() {
-        return category;
-    }
-    public Status getStatus() {
-        return status;
-    }
-
-    //Setters
-    public void setUser_id(Integer userId) {
-        this.user_id = userId;
-    }
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-    public void setTransaction_time(LocalDateTime now) {
-        this.transaction_time = now;
-    }
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public void setBank(Bank bank) {
         this.bank = bank;
     }
+
+    public Currency getCurrency() {
+        return currency;
+    }
+
     public void setCurrency(Currency currency) {
         this.currency = currency;
     }
+
+    public Category getCategory() {
+        return category;
+    }
+
     public void setCategory(Category category) {
         this.category = category;
     }
+
+    public Status getStatus() {
+        return status;
+    }
+
     public void setStatus(Status status) {
         this.status = status;
     }
+
+    public Type getType() {
+        return type;
+    }
+
     public void setType(Type type) {
         this.type = type;
     }
 
-    @Override
-    public String toString() {
-        return "Transaction{" +
-                "id=" + transaction_id +
-                ", user_id=" + user_id +
-                ", bank=" + bank.getName() +
-                ", amount=" + amount +
-                ", category='" + category.getCategoryName() + '\'' +
-                ", status='" + status.getStatus_name() + '\'' +
-                ", transaction_time=" + transaction_time + '\''+
-                ", description='" + description + '\'' +
-                ", currency_code='" + currency.getCurrencyName() + '\'' +
-                '}';
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public LocalDateTime getTransactionTime() {
+        return transactionTime;
+    }
+
+    public void setTransactionTime(LocalDateTime transactionTime) {
+        this.transactionTime = transactionTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

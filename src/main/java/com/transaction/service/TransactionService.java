@@ -1,7 +1,7 @@
 package com.transaction.service;
 
-import com.transaction.models.*;
-import com.transaction.repository.*;
+import com.transaction.models.Transaction;
+import com.transaction.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,29 +15,10 @@ import java.util.Optional;
 public class TransactionService {
 
     @Autowired
-    private TransactionsRepository transactionRepository;
+    private TransactionRepository transactionRepository;
 
     @Autowired
-    private TypeRepository typeRepository;
-
-    @Autowired
-    private BankRepository bankRepository;
-
-    @Autowired
-    private CurrencyRepository currencyRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private StatusRepository statusRepository;
-
-    @Autowired
-    private BalanceService balanceService;
-
-//    @Autowired
-//    private KafkaTemplate<String, String> kafkaTemplate;
-
+    private CurrencyService currencyService;
 
     public List<Transaction> getAllTransactions() {
         return transactionRepository.findAll();
@@ -48,110 +29,87 @@ public class TransactionService {
     }
 
     @Transactional
-    public Transaction createTransaction(Long transaction_id, Integer user_id, BigDecimal amount,
-                                         Integer type_id, Integer category_id, Integer status_id,
-                                         String description, String currency_code, Integer bank_id) {
-
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+    public Transaction createTransaction(Transaction transaction) {
+        if (transaction.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Amount must be positive");
         }
 
-
-        Optional<Type> type = typeRepository.findById(type_id);
-        Optional<Bank> bank = bankRepository.findById(bank_id);
-        Optional<Currency> currency = currencyRepository.findById(currency_code);
-        Optional<Category> category = categoryRepository.findById(category_id);
-        Optional<Status> status = statusRepository.findById(status_id);
-        Optional<Transaction> transaction = transactionRepository.findById(transaction_id);
-
-        if (type.isPresent()) {
-            Transaction updatedTransaction = transaction.get();
-            if (type.isPresent()) {
-                updatedTransaction.setType(type.get());
-            }
-            else {
-            throw new IllegalArgumentException("Invalid type_id");
-            }
-            if (bank.isPresent()) {
-                updatedTransaction.setBank(bank.get());
-            } else {
-                throw new IllegalArgumentException("Invalid bank_id");
-            }
-            if (currency.isPresent()) {
-                updatedTransaction.setCurrency(currency.get());
-            } else {
-                throw new IllegalArgumentException("Invalid currency_code");
-            }
-            if (category.isPresent()) {
-                updatedTransaction.setCategory(category.get());
-            } else {
-                throw new IllegalArgumentException("Invalid category_id");
-            }
-            if (status.isPresent()) {
-                updatedTransaction.setStatus(status.get());
-            }
-        }
-        else {
-            throw new IllegalArgumentException("Invalid status_id");
-        }
-
-
-        transaction.setUser_id(user_id);
-        transaction.setAmount(amount);
-        transaction.setTransaction_time(LocalDateTime.now());
-        transaction.setDescription(description);
-
-        Transaction savedTransaction = transactionRepository.save(transaction);
-
-        balanceService.changeBalance(user_id, type_id, amount, bank_id, currency_code, transaction.getTransaction_time());
-
-//        kafkaTemplate.send("transaction-topic", savedTransaction.toString());
-
-        return savedTransaction;
+        transaction.setTransactionTime(LocalDateTime.now());
+        return transactionRepository.save(transaction);
     }
 
-    public Transaction updateTransaction(Long transactionId, Integer user_id, BigDecimal amount, Integer type_id,
-                                         Integer category_id, Integer status_id,
-                                         String description, String currency_code, Integer bank_id) {
-        Optional<Type> type = typeRepository.findById(type_id);
-        Optional<Bank> bank = bankRepository.findById(bank_id);
-        Optional<Currency> currency = currencyRepository.findById(currency_code);
-        Optional<Category> category = categoryRepository.findById(category_id);
-        Optional<Status> status = statusRepository.findById(status_id);
-        Optional<Transaction> transaction = transactionRepository.findById(transactionId);
-
-        if(transaction.isPresent()){
-            if (type.isPresent()) {
-                transaction.setType(type.get());
-            } else {
-                throw new IllegalArgumentException("Invalid type_id");
-            }
-            if (bank.isPresent()) {
-                transaction.setBank(bank.get());
-            } else {
-                throw new IllegalArgumentException("Invalid bank_id");
-            }
-            if (currency.isPresent()) {
-                transaction.setCurrency(currency.get());
-            } else {
-                throw new IllegalArgumentException("Invalid currency_code");
-            }
-            if (category.isPresent()) {
-                transaction.setCategory(category.get());
-            } else {
-                throw new IllegalArgumentException("Invalid category_id");
-            }
-            if (status.isPresent()) {
-                transaction.setStatus(status.get());
-            } else {
-                throw new IllegalArgumentException("Invalid status_id");
-            }
-        }
-        else {
-            throw new IllegalArgumentException("Invalid status_id");}
+    @Transactional
+    public Transaction updateTransaction(Long transactionId, Transaction updatedTransaction) {
+        return transactionRepository.findById(transactionId)
+                .map(transaction -> {
+                    transaction.setUserId(updatedTransaction.getUserId());
+                    transaction.setAmount(updatedTransaction.getAmount());
+                    transaction.setType(updatedTransaction.getType());
+                    transaction.setCategory(updatedTransaction.getCategory());
+                    transaction.setStatus(updatedTransaction.getStatus());
+                    transaction.setDescription(updatedTransaction.getDescription());
+                    transaction.setCurrency(updatedTransaction.getCurrency());
+                    transaction.setBank(updatedTransaction.getBank());
+                    transaction.setTransactionTime(LocalDateTime.now());
+                    return transactionRepository.save(transaction);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Transaction not found"));
     }
 
-    public void deleteStatus(Integer statusId) {
-        statusRepository.deleteById(statusId);
+    public void deleteTransaction(Long transactionId) {
+        transactionRepository.deleteById(transactionId);
+    }
+
+    public BigDecimal convertAmount(Transaction transaction, String toCurrencyCode) {
+        String fromCurrencyCode = transaction.getCurrency().getCode();
+        Double convertedAmount = currencyService.convertCurrency(fromCurrencyCode, toCurrencyCode, transaction.getAmount().doubleValue());
+        return BigDecimal.valueOf(convertedAmount);
+    }
+
+    public String getTransactionAmountInCurrency(Long transactionId, String toCurrencyCode) {
+        return transactionRepository.findById(transactionId)
+                .map(transaction -> {
+                    BigDecimal convertedAmount = convertAmount(transaction, toCurrencyCode);
+                    return String.format("Transaction amount in %s: %s", toCurrencyCode, convertedAmount);
+                })
+                .orElse("Transaction not found");
+    }
+
+    public List<Transaction> getTransactionsByUserId(Integer userId) {
+        return transactionRepository.findByUserId(userId);
+    }
+
+    public List<Transaction> getTransactionsByTypeId(Integer typeId) {
+        return transactionRepository.findByTypeId(typeId);
+    }
+
+    public List<Transaction> getTransactionsByCategoryId(Integer categoryId) {
+        return transactionRepository.findByCategoryId(categoryId);
+    }
+
+    public List<Transaction> getTransactionsByStatusId(Integer statusId) {
+        return transactionRepository.findByStatusId(statusId);
+    }
+
+    public List<Transaction> getTransactionsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        return transactionRepository.findByTransactionTimeBetween(startDate, endDate);
+    }
+
+    public List<Transaction> getTransactionsByAmountGreaterThan(BigDecimal amount) {
+        return transactionRepository.findByAmountGreaterThan(amount);
+    }
+
+    public List<Transaction> getTransactionsByAmountLessThan(BigDecimal amount) {
+        return transactionRepository.findByAmountLessThan(amount);
+    }
+
+    public List<Transaction> getTransactionsByUserIdAndDateRange(Integer userId, LocalDateTime startDate, LocalDateTime endDate) {
+        return transactionRepository.findByUserIdAndTransactionTimeBetween(userId, startDate, endDate);
+    }
+
+    public List<Transaction> getFilteredTransactions(Integer userId, Integer typeId, Integer categoryId, Integer statusId,
+                                                     LocalDateTime startDate, LocalDateTime endDate, BigDecimal minAmount, BigDecimal maxAmount) {
+        return transactionRepository.findByUserIdAndTypeIdAndCategoryIdAndStatusIdAndTransactionTimeBetweenAndAmountGreaterThanEqualAndAmountLessThanEqual(
+                userId, typeId, categoryId, statusId, startDate, endDate, minAmount, maxAmount);
     }
 }

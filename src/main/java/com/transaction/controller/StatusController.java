@@ -31,7 +31,7 @@ public class StatusController {
     public void createNewStatus(@RequestParam String status_name,
                                 @RequestParam String description){
         Status status = new Status();
-        status.setStatus_name(status_name);
+        status.setStatusName(status_name);
         status.setDescription(description);
         statusService.createNewStatus(status);
     }

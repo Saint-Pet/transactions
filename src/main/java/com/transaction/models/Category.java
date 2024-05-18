@@ -7,18 +7,20 @@ import jakarta.persistence.*;
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer categoryId;
+    @Column(name = "category_id")
+    private Integer id;
 
+    @Column(name = "category_name")
     private String categoryName;
+
     private String description;
 
-    public Integer getCategoryId() {
-        return categoryId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
+    public void setId(Integer categoryId) {
+        this.id = categoryId;
     }
 
     public String getCategoryName() {

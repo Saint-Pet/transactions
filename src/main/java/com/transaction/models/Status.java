@@ -7,18 +7,19 @@ import jakarta.persistence.*;
 public class Status {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer statusId;
+    @Column(name = "status_id")
+    private Integer id;
 
-    private String status_name;
+    @Column(name = "status_name")
+    private String statusName
+            ;
     private String description;
 
-    // Getters and Setters
-    public Integer getStatusId() {
-        return statusId;
+    public Integer getId() {
+        return id;
     }
-    public String getStatus_name(){
-        return status_name;
+    public String getStatusName(){
+        return statusName;
     }
     public String getDescription() {
         return description;
@@ -27,7 +28,7 @@ public class Status {
     public void setDescription(String description) {
         this.description = description;
     }
-    public void setStatus_name(String status_name) {
-        this.status_name = status_name;
+    public void setStatusName(String status_name) {
+        this.statusName = status_name;
     }
 }

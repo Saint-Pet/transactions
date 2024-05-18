@@ -7,18 +7,20 @@ import jakarta.persistence.*;
 public class Currency {
 
     @Id
-    private String currencyCode;
+    @Column(name = "currency_code")
+    private String code;
 
+    @Column(name = "currency_name")
     private String currencyName;
     private String symbol;
 
 
-    public String getCurrencyCode() {
-        return currencyCode;
+    public String getCode() {
+        return code;
     }
 
-    public void setCurrencyCode(String currencyCode) {
-        this.currencyCode = currencyCode;
+    public void setCode(String currencyCode) {
+        this.code = currencyCode;
     }
 
     public String getCurrencyName() {
