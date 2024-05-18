@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.transaction</groupId>
-    <artifactId>spring-boot-service-transaction</artifactId>
+    <artifactId>transaction</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>spring-boot-service-transaction</name>
     <description>spring-boot-service-transaction</description>

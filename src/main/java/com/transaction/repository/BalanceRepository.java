@@ -7,6 +7,6 @@ import com.transaction.models.Bank;
 import com.transaction.models.Currency;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface BalanceRepository extends JpaRepository<Balance, Integer> {
-    Optional<Balance> findByCurrencyAndBank(Optional<Currency> currency, Optional<Bank> bank);
+public interface BalanceRepository extends JpaRepository<Balance, Long> {
+    Optional<Balance> findByCurrencyAndBankAndUser_id(Currency currency, Bank bank, Integer user_id);
 }

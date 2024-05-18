@@ -15,9 +15,11 @@ public class Type {
     public Integer getType_id() {
         return type_id;
     }
+
     public String getType_name() {
         return type_name;
     }
+
     public String getDescription(){
         return description;
     }
@@ -25,8 +27,12 @@ public class Type {
     public void setType_id(Integer id) {
         this.type_id = id;
     }
+
     public void setType_name(String name) {
         this.type_name = name;
     }
-    public void setDescription(String description){ this.description=description;}
+
+    public void setDescription(String description){
+        this.description=description;
+    }
 }

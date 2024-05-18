@@ -42,7 +42,7 @@ public class TransactionService {
     public Transaction createTransaction(Integer user_id, BigDecimal amount, Integer type_id,
                                          Integer category_id, Integer status_id,
                                          String description, String currency_code, Integer bank_id) {
-        // Валидация транзакции
+
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Amount must be positive");
         }

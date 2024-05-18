@@ -31,9 +31,9 @@ public class BalanceService {
 
         Optional<Bank> bank = bankRepository.findById(bank_id);
         Optional<Currency> currency = currencyRepository.findById(currency_code);
-        if (currency.isPresent() && bank.isPresent()){
-            Optional<Balance> optionalBalance = balanceRepository.findByCurrencyAndBank(currency, bank);
-            if (!optionalBalance.isPresent()) {
+        if (currency.isPresent() && bank.isPresent()) {
+            Optional<Balance> optionalBalance = balanceRepository.findByCurrencyAndBankAndUser_id(currency.get(), bank.get(), user_id);
+            if (optionalBalance.isEmpty()) {
                 throw new IllegalArgumentException("Balance not found for user_id: " + user_id + ", bank_id: " + bank_id + ", currency_code: " + currency_code);
             }
 
