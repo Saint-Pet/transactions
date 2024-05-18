@@ -1,6 +1,6 @@
 package com.transaction.controller;
 
-import com.transaction.model.Transaction;
+import com.transaction.models.Transaction;
 import com.transaction.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

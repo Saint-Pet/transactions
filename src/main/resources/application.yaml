@@ -2,13 +2,15 @@ spring:
   application:
     name: service-transaction
   datasource:
-    url: jdbc:postgresql://147.45.181.198:5432/postgres
+    url: jdbc:postgresql://147.45.181.198:5432/smartbudget
     username: user
     password: password
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate.default_schema: transactions
 
   kafka:
     bootstrap-servers: localhost:9092
