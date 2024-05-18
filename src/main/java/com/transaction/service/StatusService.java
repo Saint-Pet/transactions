@@ -29,10 +29,10 @@ public class StatusService {
     public Status updateStatus(Integer statusId, String status_name, String description) {
         Optional<Status> status = statusRepository.findById(statusId);
         if (status.isPresent()){
-            Status updatedstatus = status.get();
-            updatedstatus.setStatus_name(status_name);
-            updatedstatus.setDescription(description);
-            return updatedstatus;
+            Status updatedStatus = status.get();
+            updatedStatus.setStatus_name(status_name);
+            updatedStatus.setDescription(description);
+            return updatedStatus;
         } else {
             throw new IllegalArgumentException("Invalid status_id");}
     }
