@@ -7,22 +7,33 @@ import jakarta.persistence.*;
 public class Currency {
 
     @Id
-    private String currency_code;
-    private String currency_name;
+    private String currencyCode;
+
+    private String currencyName;
     private String symbol;
 
-    // Getters and Setters
-    public String getCurrency_code(){
-        return currency_code;
+
+    public String getCurrencyCode() {
+        return currencyCode;
     }
-    public String getCurrency_name() {
-        return currency_name;
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
     }
-    public String getSymbol(){
+
+    public String getCurrencyName() {
+        return currencyName;
+    }
+
+    public void setCurrencyName(String currencyName) {
+        this.currencyName = currencyName;
+    }
+
+    public String getSymbol() {
         return symbol;
     }
 
-    public void setCurrency_code(String currency_code) {
-        this.currency_code = currency_code;
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
     }
 }

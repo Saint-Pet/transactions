@@ -7,31 +7,70 @@ import jakarta.persistence.*;
 public class Bank {
 
     @Id
-    private Integer bank_id;
-    private String name;
-    private String bank_code;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer bankId;
+
+    private String bankName;
+    private String bankCode;
     private String address;
-    private String phone_number;
+    private String phoneNumber;
     private String website;
+    private String name;
 
 
-    // Getters
-    public Integer getBank_id() {
-        return bank_id;
+    public Integer getBankId() {
+        return bankId;
     }
+
+    public void setBankId(Integer bankId) {
+        this.bankId = bankId;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
+    public String getBankCode() {
+        return bankCode;
+    }
+
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
     public String getName() {
         return name;
     }
-    public String getBank_code(){ return bank_code;}
-    public String getAddress(){ return address;}
-    public String getPhone_number(){ return phone_number;}
-    public String getWebsite(){ return website;}
 
-    public void setId(Integer id) {
-        this.bank_id = id;
-    }
     public void setName(String name) {
         this.name = name;
     }
 }
-

@@ -7,22 +7,33 @@ import jakarta.persistence.*;
 public class Category {
 
     @Id
-    private Integer category_id;
-    private String category_name;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer categoryId;
+
+    private String categoryName;
     private String description;
 
-    // Getters and Setters
-    public Integer getCategory_id() {
-        return category_id;
+    public Integer getCategoryId() {
+        return categoryId;
     }
-    public String getCategory_name() {
-        return category_name;
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
-    public String getDescription(){
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getDescription() {
         return description;
     }
 
-    public void setCategory_id(Integer category_id){
-        this.category_id=category_id;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

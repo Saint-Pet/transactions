@@ -107,11 +107,11 @@ public class Transaction {
                 ", user_id=" + user_id +
                 ", bank=" + bank.getName() +
                 ", amount=" + amount +
-                ", category='" + category.getCategory_name() + '\'' +
+                ", category='" + category.getCategoryName() + '\'' +
                 ", status='" + status.getStatus_name() + '\'' +
                 ", transaction_time=" + transaction_time + '\''+
                 ", description='" + description + '\'' +
-                ", currency_code='" + currency.getCurrency_name() + '\'' +
+                ", currency_code='" + currency.getCurrencyName() + '\'' +
                 '}';
     }
 }
