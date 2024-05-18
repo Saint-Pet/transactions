@@ -25,16 +25,15 @@ public class BalanceService {
     @Autowired
     private BalanceRepository balanceRepository;
 
-    public void changeBalance(Integer user_id,Integer transaction_type, BigDecimal value,
-                              Integer bank_id, String currency_code,
-                              LocalDateTime time){
+    public void changeBalance(Integer userId, Integer transaction_type, BigDecimal value,
+                              Integer bank_id, String currency_code, LocalDateTime time) {
 
         Optional<Bank> bank = bankRepository.findById(bank_id);
         Optional<Currency> currency = currencyRepository.findById(currency_code);
         if (currency.isPresent() && bank.isPresent()) {
-            Optional<Balance> optionalBalance = balanceRepository.findByCurrencyAndBankAndUser_id(currency.get(), bank.get(), user_id);
+            Optional<Balance> optionalBalance = balanceRepository.findByCurrencyAndBankAndUserId(currency.get(), bank.get(), userId);
             if (optionalBalance.isEmpty()) {
-                throw new IllegalArgumentException("Balance not found for user_id: " + user_id + ", bank_id: " + bank_id + ", currency_code: " + currency_code);
+                throw new IllegalArgumentException("Balance not found for user_id: " + userId + ", bank_id: " + bank_id + ", currency_code: " + currency_code);
             }
 
             Balance balance = optionalBalance.get();
@@ -48,8 +47,9 @@ public class BalanceService {
             }
 
             balance.setLast_updated(time);
-
             balanceRepository.save(balance);
+        } else {
+            throw new IllegalArgumentException("Currency or Bank not found");
         }
     }
 }

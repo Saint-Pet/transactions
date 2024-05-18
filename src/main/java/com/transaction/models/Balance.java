@@ -22,7 +22,7 @@ public class Balance {
     private Currency currency;
 
     @Column(name = "user_id")
-    private Integer user_id;
+    private Integer userId;
 
     private BigDecimal amount;
     private LocalDateTime last_updated;
@@ -34,8 +34,8 @@ public class Balance {
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
-    public void setUser_id(Integer user_id) {
-        this.user_id = user_id;
+    public void setUserId(Integer userId) {  // Исправлено имя метода
+        this.userId = userId;
     }
 
     public void setCurrency(Currency currency) {
@@ -49,8 +49,8 @@ public class Balance {
     public Integer getBalance_id() {
         return balance_id;
     }
-    public Integer getUser_id() {
-        return user_id;
+    public Integer getUserId() {
+        return userId;
     }
     public BigDecimal getAmount() {
         return amount;
