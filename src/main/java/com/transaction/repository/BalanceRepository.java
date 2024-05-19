@@ -13,5 +13,5 @@ public interface BalanceRepository extends JpaRepository<Balance, Long> {
     List<Balance> findAllByCurrency(Currency currency);
     List<Balance> findAllByUserId(Integer userId);
     List<Balance> findAllByBank(Bank bank);
-    List<Balance> findById(Integer id);
+    List<Balance> findByUserId(Integer id);
 }

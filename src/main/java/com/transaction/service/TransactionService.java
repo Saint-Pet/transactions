@@ -1,7 +1,5 @@
 package com.transaction.service;
 
-import com.transaction.dto.BalanceDTO;
-import com.transaction.dto.TransactionDTO;
 import com.transaction.model.*;
 import com.transaction.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
