@@ -1,6 +1,6 @@
 package com.transaction.controller;
 
-import com.transaction.models.Bank;
+import com.transaction.model.Bank;
 import com.transaction.service.BankService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

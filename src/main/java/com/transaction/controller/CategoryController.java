@@ -1,6 +1,6 @@
 package com.transaction.controller;
 
-import com.transaction.models.Category;
+import com.transaction.model.Category;
 import com.transaction.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.transaction.service;
 
-import com.transaction.models.Category;
+import com.transaction.model.Category;
 import com.transaction.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

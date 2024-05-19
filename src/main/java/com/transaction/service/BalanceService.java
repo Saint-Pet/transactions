@@ -1,8 +1,8 @@
 package com.transaction.service;
 
-import com.transaction.models.Balance;
-import com.transaction.models.Bank;
-import com.transaction.models.Currency;
+import com.transaction.model.Balance;
+import com.transaction.model.Bank;
+import com.transaction.model.Currency;
 import com.transaction.repository.BalanceRepository;
 import com.transaction.repository.BankRepository;
 import com.transaction.repository.CurrencyRepository;

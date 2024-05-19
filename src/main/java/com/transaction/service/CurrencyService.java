@@ -1,6 +1,6 @@
 package com.transaction.service;
 
-import com.transaction.models.Currency;
+import com.transaction.model.Currency;
 import com.transaction.repository.CurrencyRepository;
 import com.transaction.dto.CurrencyDTO.ExchangeRateResponse;
 import org.springframework.beans.factory.annotation.Autowired;

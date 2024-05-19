@@ -1,6 +1,6 @@
 package com.transaction.service;
 
-import com.transaction.models.Status;
+import com.transaction.model.Status;
 import com.transaction.repository.StatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.transaction.controller;
 
-import com.transaction.models.Currency;
+import com.transaction.model.Currency;
 import com.transaction.service.CurrencyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.transaction.models;
+package com.transaction.model;
 
 import jakarta.persistence.*;
 

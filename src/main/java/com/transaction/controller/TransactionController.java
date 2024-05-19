@@ -1,6 +1,9 @@
 package com.transaction.controller;
 
-import com.transaction.models.Transaction;
+import com.transaction.dto.TransactionDTO;
+import com.transaction.model.*;
+import com.transaction.repository.*;
+import com.transaction.service.CurrencyService;
 import com.transaction.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,13 +12,35 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/transactions")
+@RequestMapping("/api/transaction")
 public class TransactionController {
 
     @Autowired
     private TransactionService transactionService;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Autowired
+    private CurrencyService currencyService;
+
+    @Autowired
+    private TypeRepository typeRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private StatusRepository statusRepository;
+
+    @Autowired
+    private BankRepository bankRepository;
+
+    @Autowired
+    private CurrencyRepository currencyRepository;
 
     @GetMapping
     public List<Transaction> getAllTransactions() {
@@ -30,16 +55,58 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<Transaction> createTransaction(@RequestBody Transaction transaction) {
-        Transaction createdTransaction = transactionService.createTransaction(transaction);
-        return ResponseEntity.ok(createdTransaction);
+    public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionDTO transactionDTO) {
+        Optional<Type> type = typeRepository.findById(transactionDTO.getTypeId());
+        Optional<Bank> bank = bankRepository.findById(transactionDTO.getBankId());
+        Optional<Currency> currency = currencyRepository.findById(transactionDTO.getCurrencyCode());
+        Optional<Category> category = categoryRepository.findById(transactionDTO.getCategoryId());
+        Optional<Status> status = statusRepository.findById(transactionDTO.getStatusId());
+        if (type.isEmpty() || bank.isEmpty() || currency.isEmpty() || category.isEmpty() || status.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            Transaction transaction = new Transaction();
+            transaction.setTransactionTime(LocalDateTime.now());
+            transaction.setDescription(transactionDTO.getDescription());
+            transaction.setType(type.get());
+            transaction.setBank(bank.get());
+            transaction.setCurrency(currency.get());
+            transaction.setCategory(category.get());
+            transaction.setStatus(status.get());
+            transaction.setAmount(transactionDTO.getAmount());
+            transaction.setUserId(transactionDTO.getUserId());
+            Transaction createdTransaction = transactionService.createTransaction(transaction);
+            return ResponseEntity.ok(createdTransaction);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Transaction> updateTransaction(@PathVariable Long id, @RequestBody Transaction transaction) {
+    public ResponseEntity<Transaction> updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDTO) {
+        Optional<Type> type = typeRepository.findById(transactionDTO.getTypeId());
+        Optional<Bank> bank = bankRepository.findById(transactionDTO.getBankId());
+        Optional<Currency> currency = currencyRepository.findById(transactionDTO.getCurrencyCode());
+        Optional<Category> category = categoryRepository.findById(transactionDTO.getCategoryId());
+        Optional<Status> status = statusRepository.findById(transactionDTO.getStatusId());
+        if (type.isEmpty() || bank.isEmpty() || currency.isEmpty() || category.isEmpty() || status.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
         try {
-            Transaction updatedTransaction = transactionService.updateTransaction(id, transaction);
-            return ResponseEntity.ok(updatedTransaction);
+            Transaction transaction = new Transaction();
+            transaction.setTransactionTime(LocalDateTime.now());
+            transaction.setDescription(transactionDTO.getDescription());
+            transaction.setType(type.get());
+            transaction.setBank(bank.get());
+            transaction.setCurrency(currency.get());
+            transaction.setCategory(category.get());
+            transaction.setStatus(status.get());
+            transaction.setAmount(transactionDTO.getAmount());
+            transaction.setUserId(transactionDTO.getUserId());
+            Optional<Transaction> updatedTransaction = transactionService.updateTransaction(id, transaction);
+            return ResponseEntity.ok(updatedTransaction.get());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }

@@ -1,7 +1,7 @@
 package com.transaction.controller;
 
 
-import com.transaction.models.Status;
+import com.transaction.model.Status;
 import com.transaction.service.StatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

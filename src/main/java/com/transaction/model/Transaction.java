@@ -1,4 +1,4 @@
-package com.transaction.models;
+package com.transaction.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -10,6 +10,7 @@ public class Transaction {
 
     @Id
     @Column(name = "transaction_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne

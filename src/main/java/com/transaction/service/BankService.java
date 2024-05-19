@@ -1,6 +1,6 @@
 package com.transaction.service;
 
-import com.transaction.models.Bank;
+import com.transaction.model.Bank;
 import com.transaction.repository.BankRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,8 @@
 package com.transaction.service;
 
-import com.transaction.models.Transaction;
-import com.transaction.repository.TransactionRepository;
+import com.transaction.dto.TransactionDTO;
+import com.transaction.model.*;
+import com.transaction.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,21 @@ public class TransactionService {
     @Autowired
     private CurrencyService currencyService;
 
+    @Autowired
+    private TypeRepository typeRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private StatusRepository statusRepository;
+
+    @Autowired
+    private BankRepository bankRepository;
+
+    @Autowired
+    private CurrencyRepository currencyRepository;
+
     public List<Transaction> getAllTransactions() {
         return transactionRepository.findAll();
     }
@@ -30,30 +46,36 @@ public class TransactionService {
 
     @Transactional
     public Transaction createTransaction(Transaction transaction) {
-        if (transaction.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Amount must be positive");
-        }
-
-        transaction.setTransactionTime(LocalDateTime.now());
-        return transactionRepository.save(transaction);
+        transactionRepository.save(transaction);
+        return transaction;
     }
 
     @Transactional
-    public Transaction updateTransaction(Long transactionId, Transaction updatedTransaction) {
-        return transactionRepository.findById(transactionId)
-                .map(transaction -> {
-                    transaction.setUserId(updatedTransaction.getUserId());
-                    transaction.setAmount(updatedTransaction.getAmount());
-                    transaction.setType(updatedTransaction.getType());
-                    transaction.setCategory(updatedTransaction.getCategory());
-                    transaction.setStatus(updatedTransaction.getStatus());
-                    transaction.setDescription(updatedTransaction.getDescription());
-                    transaction.setCurrency(updatedTransaction.getCurrency());
-                    transaction.setBank(updatedTransaction.getBank());
-                    transaction.setTransactionTime(LocalDateTime.now());
-                    return transactionRepository.save(transaction);
-                })
-                .orElseThrow(() -> new IllegalArgumentException("Transaction not found"));
+    public Optional<Transaction> updateTransaction(Long transactionId, Transaction transaction) {
+        Optional<Type> type = typeRepository.findById(transaction.getType().getId());
+        Optional<Category> category = categoryRepository.findById(transaction.getCategory().getId());
+        Optional<Status> status = statusRepository.findById(transaction.getStatus().getId());
+        Optional<Bank> bank = bankRepository.findById(transaction.getBank().getId());
+        Optional<Currency> currency = currencyRepository.findById(transaction.getCurrency().getCode());
+
+        if (type.isEmpty() || category.isEmpty() || status.isEmpty() || bank.isEmpty() || currency.isEmpty()) {
+            throw new IllegalArgumentException("One or more fields are invalid");
+        }
+
+        Optional<Transaction> updatedTransaction = transactionRepository.findById(transactionId);
+        if (updatedTransaction.isEmpty()) {
+            throw new IllegalArgumentException("Transaction not found");
+        }
+        updatedTransaction.get().setType(type.get());
+        updatedTransaction.get().setBank(bank.get());
+        updatedTransaction.get().setCategory(category.get());
+        updatedTransaction.get().setStatus(status.get());
+        updatedTransaction.get().setCurrency(currency.get());
+        updatedTransaction.get().setUserId(transaction.getUserId());
+        updatedTransaction.get().setTransactionTime(LocalDateTime.now());
+        updatedTransaction.get().setAmount(transaction.getAmount());
+        updatedTransaction.get().setDescription(transaction.getDescription());
+        return updatedTransaction;
     }
 
     public void deleteTransaction(Long transactionId) {
