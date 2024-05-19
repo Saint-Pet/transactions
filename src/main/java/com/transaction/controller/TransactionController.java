@@ -1,8 +1,10 @@
 package com.transaction.controller;
 
+import com.transaction.dto.BalanceDTO;
 import com.transaction.dto.TransactionDTO;
 import com.transaction.model.*;
 import com.transaction.repository.*;
+import com.transaction.service.BalanceService;
 import com.transaction.service.CurrencyService;
 import com.transaction.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class TransactionController {
 
     @Autowired
     private CurrencyService currencyService;
+
+    @Autowired
+    private BalanceService balanceService;
 
     @Autowired
     private TypeRepository typeRepository;
@@ -76,6 +81,17 @@ public class TransactionController {
             transaction.setStatus(status.get());
             transaction.setAmount(transactionDTO.getAmount());
             transaction.setUserId(transactionDTO.getUserId());
+
+            BalanceDTO balanceDTO = new BalanceDTO();
+            balanceDTO.setValue(transaction.getAmount());
+            balanceDTO.setBankId(transaction.getBank().getId());
+            balanceDTO.setCurrencyCode(transaction.getCurrency().getCode());
+            balanceDTO.setTime(transaction.getTransactionTime());
+            balanceDTO.setUserId(transaction.getUserId());
+            balanceDTO.setTransactionType(transaction.getType().getId());
+
+            balanceService.updateBalance(balanceDTO);
+
             Transaction createdTransaction = transactionService.createTransaction(transaction);
             return ResponseEntity.ok(createdTransaction);
         } catch (IllegalArgumentException e) {
