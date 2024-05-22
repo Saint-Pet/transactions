@@ -35,6 +35,28 @@ public class TransactionService {
     @Autowired
     private CurrencyRepository currencyRepository;
 
+    public Transaction validation(TransactionDTO transactionDTO){
+        Optional<Type> type = typeRepository.findById(transactionDTO.getTypeId());
+        Optional<Bank> bank = bankRepository.findById(transactionDTO.getBankId());
+        Optional<Currency> currency = currencyRepository.findById(transactionDTO.getCurrencyCode());
+        Optional<Category> category = categoryRepository.findById(transactionDTO.getCategoryId());
+        Optional<Status> status = statusRepository.findById(transactionDTO.getStatusId());
+        if (type.isEmpty() || bank.isEmpty() || currency.isEmpty() || category.isEmpty() || status.isEmpty()) {
+            return null;
+        }
+        Transaction transaction = new Transaction();
+        transaction.setTransactionTime(LocalDateTime.now());
+        transaction.setDescription(transactionDTO.getDescription());
+        transaction.setType(type.get());
+        transaction.setBank(bank.get());
+        transaction.setCurrency(currency.get());
+        transaction.setCategory(category.get());
+        transaction.setStatus(status.get());
+        transaction.setAmount(transactionDTO.getAmount());
+        transaction.setUserId(transactionDTO.getUserId());
+        return transaction;
+    }
+
     public List<Transaction> getAllTransactions() {
         return transactionRepository.findAll();
     }

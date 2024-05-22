@@ -1,14 +1,16 @@
 package com.smartbudget.transactions.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartbudget.transactions.dto.BalanceDTO;
 import com.smartbudget.transactions.dto.TransactionDTO;
-import com.smartbudget.transactions.model.*;
-import com.smartbudget.transactions.repository.*;
+import com.smartbudget.transactions.model.Transaction;
+import com.smartbudget.transactions.repository.TransactionRepository;
 import com.smartbudget.transactions.service.BalanceService;
-import com.smartbudget.transactions.service.CurrencyService;
 import com.smartbudget.transactions.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -33,19 +35,10 @@ public class TransactionController {
     private BalanceService balanceService;
 
     @Autowired
-    private TypeRepository typeRepository;
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private StatusRepository statusRepository;
-
-    @Autowired
-    private BankRepository bankRepository;
-
-    @Autowired
-    private CurrencyRepository currencyRepository;
+    private ObjectMapper objectMapper;
 
     @GetMapping
     public List<Transaction> getAllTransactions() {
@@ -60,72 +53,38 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionDTO transactionDTO) {
-        Optional<Type> type = typeRepository.findById(transactionDTO.getTypeId());
-        Optional<Bank> bank = bankRepository.findById(transactionDTO.getBankId());
-        Optional<Currency> currency = currencyRepository.findById(transactionDTO.getCurrencyCode());
-        Optional<Category> category = categoryRepository.findById(transactionDTO.getCategoryId());
-        Optional<Status> status = statusRepository.findById(transactionDTO.getStatusId());
-        if (type.isEmpty() || bank.isEmpty() || currency.isEmpty() || category.isEmpty() || status.isEmpty()) {
+    public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionDTO transactionDTO) throws JsonProcessingException {
+        Transaction transaction = transactionService.validation(transactionDTO);
+        if (transaction==null){
             return ResponseEntity.notFound().build();
         }
+        BalanceDTO balanceDTO = new BalanceDTO();
+        balanceDTO.setValue(transaction.getAmount());
+        balanceDTO.setBankId(transaction.getBank().getId());
+        balanceDTO.setCurrencyCode(transaction.getCurrency().getCode());
+        balanceDTO.setTime(transaction.getTransactionTime());
+        balanceDTO.setUserId(transaction.getUserId());
+        balanceDTO.setTransactionType(transaction.getType().getId());
 
-        try {
-            Transaction transaction = new Transaction();
-            transaction.setTransactionTime(LocalDateTime.now());
-            transaction.setDescription(transactionDTO.getDescription());
-            transaction.setType(type.get());
-            transaction.setBank(bank.get());
-            transaction.setCurrency(currency.get());
-            transaction.setCategory(category.get());
-            transaction.setStatus(status.get());
-            transaction.setAmount(transactionDTO.getAmount());
-            transaction.setUserId(transactionDTO.getUserId());
+        balanceService.updateBalance(balanceDTO);
+        Transaction createdTransaction = transactionService.createTransaction(transaction);
 
-            BalanceDTO balanceDTO = new BalanceDTO();
-            balanceDTO.setValue(transaction.getAmount());
-            balanceDTO.setBankId(transaction.getBank().getId());
-            balanceDTO.setCurrencyCode(transaction.getCurrency().getCode());
-            balanceDTO.setTime(transaction.getTransactionTime());
-            balanceDTO.setUserId(transaction.getUserId());
-            balanceDTO.setTransactionType(transaction.getType().getId());
+        String transactionJson = objectMapper.writeValueAsString(createdTransaction);
 
-            balanceService.updateBalance(balanceDTO);
+        // Отправка JSON в Kafka-топик
+        kafkaTemplate.send("transaction_requests", transactionJson);
 
-            Transaction createdTransaction = transactionService.createTransaction(transaction);
-            return ResponseEntity.ok(createdTransaction);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(createdTransaction);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Transaction> updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDTO) {
-        Optional<Type> type = typeRepository.findById(transactionDTO.getTypeId());
-        Optional<Bank> bank = bankRepository.findById(transactionDTO.getBankId());
-        Optional<Currency> currency = currencyRepository.findById(transactionDTO.getCurrencyCode());
-        Optional<Category> category = categoryRepository.findById(transactionDTO.getCategoryId());
-        Optional<Status> status = statusRepository.findById(transactionDTO.getStatusId());
-        if (type.isEmpty() || bank.isEmpty() || currency.isEmpty() || category.isEmpty() || status.isEmpty()) {
+        Transaction transaction = transactionService.validation(transactionDTO);
+        if (transaction==null || transactionRepository.findById(id).isEmpty()){
             return ResponseEntity.notFound().build();
         }
-
-        try {
-            Transaction transaction = new Transaction();
-            transaction.setTransactionTime(LocalDateTime.now());
-            transaction.setDescription(transactionDTO.getDescription());
-            transaction.setType(type.get());
-            transaction.setBank(bank.get());
-            transaction.setCurrency(currency.get());
-            transaction.setCategory(category.get());
-            transaction.setStatus(status.get());
-            transaction.setAmount(transactionDTO.getAmount());
-            transaction.setUserId(transactionDTO.getUserId());
-            Optional<Transaction> updatedTransaction = transactionService.updateTransaction(id, transaction);
-            return ResponseEntity.ok(updatedTransaction.get());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        Optional<Transaction> updatedTransaction = transactionService.updateTransaction(id, transaction);
+        return ResponseEntity.ok(updatedTransaction.get());
     }
 
     @DeleteMapping("/{id}")
@@ -165,7 +124,8 @@ public class TransactionController {
     }
 
     @GetMapping("/date-range")
-    public ResponseEntity<List<Transaction>> getTransactionsByDateRange(@RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate) {
+    public ResponseEntity<List<Transaction>> getTransactionsByDateRange(@RequestParam LocalDateTime startDate,
+                                                                        @RequestParam LocalDateTime endDate) {
         List<Transaction> transactions = transactionService.getTransactionsByDateRange(startDate, endDate);
         return ResponseEntity.ok(transactions);
     }
@@ -183,7 +143,9 @@ public class TransactionController {
     }
 
     @GetMapping("/user/{userId}/date-range")
-    public ResponseEntity<List<Transaction>> getTransactionsByUserIdAndDateRange(@PathVariable Integer userId, @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate) {
+    public ResponseEntity<List<Transaction>> getTransactionsByUserIdAndDateRange(@PathVariable Integer userId,
+                                                                                 @RequestParam LocalDateTime startDate,
+                                                                                 @RequestParam LocalDateTime endDate) {
         List<Transaction> transactions = transactionService.getTransactionsByUserIdAndDateRange(userId, startDate, endDate);
         return ResponseEntity.ok(transactions);
     }
