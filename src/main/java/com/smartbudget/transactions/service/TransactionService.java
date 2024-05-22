@@ -1,5 +1,6 @@
 package com.smartbudget.transactions.service;
 
+import com.smartbudget.transactions.dto.TransactionDTO;
 import com.smartbudget.transactions.model.*;
 import com.smartbudget.transactions.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;

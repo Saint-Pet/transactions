@@ -29,9 +29,6 @@ public class TransactionController {
     private TransactionRepository transactionRepository;
 
     @Autowired
-    private CurrencyService currencyService;
-
-    @Autowired
     private BalanceService balanceService;
 
     @Autowired

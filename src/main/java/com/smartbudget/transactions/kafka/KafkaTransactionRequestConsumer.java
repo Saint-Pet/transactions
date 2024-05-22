@@ -29,7 +29,9 @@ public class KafkaTransactionRequestConsumer {
     public void consume(String message) {
         try {
             KafkaRequest request = objectMapper.readValue(message, KafkaRequest.class);
-            List<Transaction> transactions = transactionService.getTransactionsByUserIdAndDateRange(request.getUserId(), request.getStartDate().atStartOfDay(), request.getEndDate().atTime(LocalTime.MAX));
+            List<Transaction> transactions = transactionService.getTransactionsByUserIdAndDateRange(request.getUserId(),
+                    request.getStartDate().atStartOfDay(),
+                    request.getEndDate().atTime(LocalTime.MAX));
             KafkaTransactionResponse response = new KafkaTransactionResponse(request.getUserId(), transactions);
             String responseMessage = objectMapper.writeValueAsString(response);
             kafkaTemplate.send("transaction_responses", request.getUserId().toString(), responseMessage);
