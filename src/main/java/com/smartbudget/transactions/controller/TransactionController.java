@@ -31,12 +31,6 @@ public class TransactionController {
     @Autowired
     private BalanceService balanceService;
 
-    @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @GetMapping
     public List<Transaction> getAllTransactions() {
         return transactionService.getAllTransactions();
@@ -64,13 +58,8 @@ public class TransactionController {
         balanceDTO.setTransactionType(transaction.getType().getId());
 
         balanceService.updateBalance(balanceDTO);
+
         Transaction createdTransaction = transactionService.createTransaction(transaction);
-
-        String transactionJson = objectMapper.writeValueAsString(createdTransaction);
-
-        // Отправка JSON в Kafka-топик
-        kafkaTemplate.send("transaction_requests", transactionJson);
-
         return ResponseEntity.ok(createdTransaction);
     }
 

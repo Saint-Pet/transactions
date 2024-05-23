@@ -1,5 +1,7 @@
 package com.smartbudget.transactions.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartbudget.transactions.dto.TransactionDTO;
 import com.smartbudget.transactions.model.*;
 import com.smartbudget.transactions.repository.*;
@@ -36,6 +38,12 @@ public class TransactionService {
     @Autowired
     private CurrencyRepository currencyRepository;
 
+    @Autowired
+    private KafkaProducerService kafkaProducerService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     public Transaction validation(TransactionDTO transactionDTO){
         Optional<Type> type = typeRepository.findById(transactionDTO.getTypeId());
         Optional<Bank> bank = bankRepository.findById(transactionDTO.getBankId());
@@ -67,9 +75,11 @@ public class TransactionService {
     }
 
     @Transactional
-    public Transaction createTransaction(Transaction transaction) {
+    public Transaction createTransaction(Transaction transaction){
 
         transactionRepository.save(transaction);
+
+        kafkaProducerService.sendMessage("Created new transaction: " + transaction);
         return transaction;
     }
 
